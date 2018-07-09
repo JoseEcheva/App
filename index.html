@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+    <title>Home</title>
+    <style>
+    h1{
+      text-align: center;
+    }
+    #cabezal{
+      text-align: center;
+    }
+    </style>
+  </head>
+  <body>
+    <h1>Proponer día</h1>
+    <br>
+    <div id='cabezal' class='row'>
+      <div class='paralelo col-md-4'>
+        <h4>Descripción<h4>
+        <input id='descripcion' type='text'></input>
+      </div>
+      <div class='paralelo col-md-4'>
+        <h4>Fecha<h4>
+        <input id='fecha' type='date'></input>
+      </div>
+      <div class='paralelo col-md-4'>
+        <h4>Lugar<h4>
+        <input id='lugar' type='text'></input>
+        <button id='crear' type="button" class="btn btn-outline-success">Crear</button>
+      </div>
+    </div>
+    <div id='datos' class='row'>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    <script>
+    var url='http://192.168.100.11:1337/fechas';
+    var fecha;
+    var lugar;
+
+    function cogerDatos(){
+      $.get(url, function(response){
+        response.forEach(function(datos){
+          $('#datos').append('<div class="col-md-4"><div class="card"><div class="card-header"><p>'+$('div #descripcion').val()+'<p></div></div><div class="card-body"><h5 class="card-title">'+datos.fecha+'</h5> <p class="card-text">'+datos.lugar+'</p> <button class="btn btn-outline-success sumar">0</button></div></div>');
+        })
+      })
+    }
+    cogerDatos()
+
+
+    $('div #crear').click(function(){
+      $('#datos').append('<div class="col-md-4"><div class="card"><div class="card-header"><p>'+$('div #descripcion').val()+'<p></div></div><div class="card-body"><h5 class="card-title">'+$('div #fecha').val()+'</h5> <p class="card-text">'+$('div #lugar').val()+'</p> <button class="btn btn-outline-success sumar">0</button></div></div>');
+    });
+
+    $(document).on('click', '.sumar', function(event){
+      if(!$(event.currentTarget).hasClass('clickado')){
+        var valor = parseInt($(event.currentTarget).text())+1;
+        $(event.currentTarget).text(valor);
+        $(event.currentTarget).addClass('clickado')
+      }else{
+        var valor = parseInt($(event.currentTarget).text())-1;
+        $(event.currentTarget).text(valor);
+        $(event.currentTarget).removeClass('clickado')
+      }
+    });
+
+    </script>
+  </body>
+</html>
