@@ -44,33 +44,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
     <script>
-    var url='http://192.168.100.11:1337/fechas';
-    var fecha;
-    var lugar;
+    var url='http://192.168.100.11:1337/fecha';
 
     function cogerDatos(){
       $.get(url, function(response){
         response.forEach(function(datos){
-          $('#datos').append('<div class="col-md-4"><div class="card"><div class="card-header"><p>'+$('div #descripcion').val()+'<p></div></div><div class="card-body"><h5 class="card-title">'+datos.fecha+'</h5> <p class="card-text">'+datos.lugar+'</p> <button class="btn btn-outline-success sumar">0</button></div></div>');
+          $('#datos').append('<div class="col-md-4"><div class="card"><div class="card-header"><p>'+$('div #descripcion').val()+'<p></div></div><div class="card-body"><h5 class="card-title">'+datos.fecha+'</h5> <p class="card-text">'+datos.lugar+'</p> <button data-id="'+datos.id+'" class="btn btn-outline-success sumar">'+datos.votos+'</button></div></div>');
         })
       })
     }
     cogerDatos()
 
-
     $('div #crear').click(function(){
-      $('#datos').append('<div class="col-md-4"><div class="card"><div class="card-header"><p>'+$('div #descripcion').val()+'<p></div></div><div class="card-body"><h5 class="card-title">'+$('div #fecha').val()+'</h5> <p class="card-text">'+$('div #lugar').val()+'</p> <button class="btn btn-outline-success sumar">0</button></div></div>');
+      var fecha=$('div #fecha').val();
+      var lugar=$('div #lugar').val();
+      if(fecha||lugar){
+        $.post(url, {fecha:fecha, lugar:lugar, votos:votos }, function(){
+          $('#datos').append('<div class="col-md-4"><div class="card"><div class="card-header"><p>'+$('div #descripcion').val()+'<p></div></div><div class="card-body"><h5 class="card-title">'+fecha+'</h5> <p class="card-text">'+lugar+'</p> <button class="btn btn-outline-success sumar">0</button></div></div>');
+        })
+      } else {
+        alert('Introduce valores en los siguientes campos')
+      }
     });
 
     $(document).on('click', '.sumar', function(event){
+      var button=$(event.currentTarget)
+      var id=button.data('id');
       if(!$(event.currentTarget).hasClass('clickado')){
-        var valor = parseInt($(event.currentTarget).text())+1;
-        $(event.currentTarget).text(valor);
-        $(event.currentTarget).addClass('clickado')
+        $.post(url + '/sumar/' + id, {}, function(){
+        var valor = parseInt(button.text()) + 1;
+        button.text(valor);
+        button.addClass('clickado')
+        })
       }else{
-        var valor = parseInt($(event.currentTarget).text())-1;
-        $(event.currentTarget).text(valor);
-        $(event.currentTarget).removeClass('clickado')
+        $.post(url + '/restar/' + id, {}, function(){
+        var valor = parseInt(button.text()) - 1;
+        button.text(valor);
+        button.addClass('clickado')
+        })
       }
     });
 
